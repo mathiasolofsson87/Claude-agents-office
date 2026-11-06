@@ -499,12 +499,14 @@ export function createRenderer(scale: 1 | 2 = 1) {
     L(h1[0], h1[1], h2[0], h2[1], '#e8c878');
     box(sgx + 0.05, sgy + 0.85, 12, 1.7, 0.65, 4, '#dcab6a');
   }
+  /* the monitor stands in the middle of the desk, towards the far edge, with the keyboard in front of it */
+  var MON_X = 0.59, MON_Y = 1.3;
   function keyboard(sgx, sgy) {
-    box(sgx + 0.45, sgy + 1.0, 16, 0.55, 0.22, 1, '#cfd5ea');
+    box(sgx + 0.62, sgy + 1.0, 16, 0.55, 0.22, 1, '#cfd5ea');
     for (var i = 0; i < 3; i++) { var a = pt(sgx + 0.5, sgy + 1.05 + i * 0.05, 17), b = pt(sgx + 1.5, sgy + 1.05 + i * 0.05, 17); }
   }
   function monitor(sgx, sgy, on, col) {
-    var gx = sgx + 1.1, gy = sgy + 0.98;
+    var gx = sgx + MON_X, gy = sgy + MON_Y;
     box(gx + 0.24, gy + 0.02, 16, 0.14, 0.1, 4, '#2a2d40');
     box(gx, gy, 20, 0.62, 0.07, 17, '#343a5c');
     if (on) {
@@ -522,70 +524,75 @@ export function createRenderer(scale: 1 | 2 = 1) {
     g.drawImage(CACHE[name], Math.round((X(sgx, sgy) - DOX) * Z), Math.round((Y(sgx, sgy, 0) - DOY) * Z));
   }
   function monitorLogo(sgx, sgy, col) {
-    var gx = sgx + 1.1, gy = sgy + 0.98;
+    var gx = sgx + MON_X, gy = sgy + MON_Y;
     poly([pt(gx + 0.22, gy + 0.07, 33), pt(gx + 0.40, gy + 0.07, 33), pt(gx + 0.40, gy + 0.07, 27), pt(gx + 0.22, gy + 0.07, 27)], col);
     poly([pt(gx + 0.26, gy + 0.07, 31), pt(gx + 0.36, gy + 0.07, 31), pt(gx + 0.36, gy + 0.07, 29), pt(gx + 0.26, gy + 0.07, 29)], sh(col, 1.3));
   }
   function mug(gx, gy, c) { box(gx, gy, 16, 0.16, 0.16, 6, c); var p = pt(gx + 0.16, gy + 0.08, 12); R(p[0] + 1, p[1], 2, 3, '#f5f5f5'); }
 
+  /*
+   * The things on the desk. The monitor stands in the middle, so nothing may sit in the screen area around it: a
+   * small item goes in the empty rear corner to its left and the main item goes on the open stretch to its right.
+   */
   function props(role, sgx, sgy, t) {
-    var f = t >> 2, p, i;
+    var f = t >> 2, p, i, a, b;
     switch (role) {
       case 'main':
-        mug(sgx + 0.15, sgy + 1.05, '#f5f5f5');
-        p = pt(sgx + 0.23, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)');
-        flat(sgx + 0.5, sgy + 1.3, 0.3, 0.22, 16.2, '#f1eee4'); flat(sgx + 0.55, sgy + 1.33, 0.2, 0.05, 16.3, '#6aa6e8');
-        box(sgx + 1.62, sgy + 0.98, 16, 0.2, 0.2, 5, '#6aa6e8');
+        mug(sgx + 0.08, sgy + 1.2, '#f5f5f5');
+        p = pt(sgx + 0.16, sgy + 1.28, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)');
+        flat(sgx + 1.22, sgy + 1.0, 0.25, 0.22, 16.2, '#f1eee4'); flat(sgx + 1.25, sgy + 1.03, 0.18, 0.05, 16.3, '#6aa6e8');
+        box(sgx + 1.55, sgy + 0.98, 16, 0.2, 0.2, 5, '#6aa6e8');
         break;
       case 'explore':
-        flat(sgx + 0.15, sgy + 1.0, 0.55, 0.4, 16, '#e8d9a8'); flat(sgx + 0.2, sgy + 1.05, 0.45, 0.3, 16.2, '#d8c690');
-        p = pt(sgx + 0.45, sgy + 1.2, 17); R(p[0] - 1, p[1] - 1, 3, 1, '#d63c3c'); R(p[0], p[1] - 2, 1, 3, '#d63c3c');
-        box(sgx + 1.65, sgy + 0.95, 16, 0.3, 0.25, 4, '#e0b86a'); box(sgx + 1.67, sgy + 0.97, 20, 0.26, 0.2, 3, '#c99a4a');
-        p = pt(sgx + 0.62, sgy + 1.1, 24); var bob = [0, 1, 1, 0][f % 4];
-        E(p[0], p[1] - 6 + bob, 6, 6, OL); E(p[0], p[1] - 6 + bob, 4, 4, '#7fd6ff'); E(p[0] - 1, p[1] - 8 + bob, 1, 1, '#fff');
-        thick(p[0] + 4, p[1] - 2 + bob, p[0] + 9, p[1] + 3 + bob, 3, '#8b5a2b');
+        /* a map with a magnifying glass lying on it, and a crate of supplies at the back */
+        flat(sgx + 1.18, sgy + 0.92, 0.32, 0.38, 16, '#e8d9a8'); flat(sgx + 1.21, sgy + 0.96, 0.26, 0.3, 16.2, '#d8c690');
+        p = pt(sgx + 1.3, sgy + 1.15, 17); R(p[0] - 1, p[1] - 1, 3, 1, '#d63c3c'); R(p[0], p[1] - 2, 1, 3, '#d63c3c');
+        p = pt(sgx + 1.3, sgy + 1.0, 17);
+        E(p[0], p[1], 6, 4, OL); E(p[0], p[1], 4, 2.5, '#7fd6ff'); R(p[0] - 2, p[1] - 1, 1, 1, '#fff');
+        thick(p[0] + 3, p[1] + 1, p[0] + 8, p[1] + 3, 2, '#8b5a2b');
+        box(sgx + 0.06, sgy + 1.18, 16, 0.28, 0.25, 4, '#e0b86a'); box(sgx + 0.08, sgy + 1.2, 20, 0.24, 0.2, 3, '#c99a4a');
         break;
       case 'plan':
-        flat(sgx + 0.1, sgy + 1.0, 0.7, 0.45, 16, '#2f56b0');
-        for (i = 0; i < 4; i++) { var a = pt(sgx + 0.15 + i * 0.16, sgy + 1.02, 16.2), b = pt(sgx + 0.15 + i * 0.16, sgy + 1.43, 16.2); L(a[0], a[1], b[0], b[1], '#6f95e8'); }
-        box(sgx + 1.62, sgy + 0.95, 16, 0.12, 0.5, 6, '#e8f0ff'); box(sgx + 1.62, sgy + 0.95, 16, 0.12, 0.05, 6, '#9fb8e8');
-        p = pt(sgx + 0.5, sgy + 1.25, 17); R(p[0] - 5, p[1], 12, 1, '#ffd54f');
+        flat(sgx + 1.18, sgy + 0.92, 0.3, 0.4, 16, '#2f56b0');
+        for (i = 0; i < 3; i++) { a = pt(sgx + 1.23 + i * 0.1, sgy + 0.94, 16.2); b = pt(sgx + 1.23 + i * 0.1, sgy + 1.28, 16.2); L(a[0], a[1], b[0], b[1], '#6f95e8'); }
+        p = pt(sgx + 1.33, sgy + 1.1, 17); R(p[0] - 5, p[1], 12, 1, '#ffd54f');
+        box(sgx + 1.58, sgy + 0.95, 16, 0.12, 0.5, 6, '#e8f0ff'); box(sgx + 1.58, sgy + 0.95, 16, 0.12, 0.05, 6, '#9fb8e8');
         break;
       case 'code':
-        mug(sgx + 0.15, sgy + 1.05, '#f5f5f5');
-        p = pt(sgx + 0.23, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)'); R(p[0] + 2 - (f & 1), p[1] - 7 - (f % 3), 1, 2, 'rgba(255,255,255,.4)');
-        box(sgx + 1.62, sgy + 0.98, 16, 0.14, 0.14, 8, '#ff5c93'); box(sgx + 1.62, sgy + 0.98, 24, 0.14, 0.14, 1, '#cfd5ea');
-        flat(sgx + 0.55, sgy + 1.3, 0.2, 0.16, 16.2, '#ffe27a');
+        mug(sgx + 0.08, sgy + 1.2, '#f5f5f5');
+        p = pt(sgx + 0.16, sgy + 1.28, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)'); R(p[0] + 2 - (f & 1), p[1] - 7 - (f % 3), 1, 2, 'rgba(255,255,255,.4)');
+        flat(sgx + 1.24, sgy + 1.05, 0.2, 0.16, 16.2, '#ffe27a');
+        box(sgx + 1.58, sgy + 0.98, 16, 0.14, 0.14, 8, '#ff5c93'); box(sgx + 1.58, sgy + 0.98, 24, 0.14, 0.14, 1, '#cfd5ea');
         break;
       case 'review':
-        for (i = 0; i < 4; i++) box(sgx + 0.12 + (i & 1) * 0.02, sgy + 1.0, 16 + i * 1.5, 0.45, 0.35, 1.5, i % 2 ? '#f1eee4' : '#ffffff');
-        p = pt(sgx + 0.55, sgy + 1.3, 23); R(p[0] - 4, p[1], 3, 1, '#d63c3c'); R(p[0] - 2, p[1] + 1, 3, 1, '#d63c3c');
-        thick(pt(sgx + 0.6, sgy + 1.35, 17)[0], pt(sgx + 0.6, sgy + 1.35, 17)[1], pt(sgx + 0.85, sgy + 1.2, 17)[0], pt(sgx + 0.85, sgy + 1.2, 17)[1], 2, '#d63c3c');
-        box(sgx + 1.65, sgy + 0.98, 16, 0.2, 0.2, 5, '#2a6fd6');
+        /* a neat stack of papers with a red pen lying on the top sheet, and a blue stamp pad */
+        for (i = 0; i < 4; i++) box(sgx + 1.2 + (i & 1) * 0.02, sgy + 0.95, 16 + i * 1.5, 0.28, 0.32, 1.5, i % 2 ? '#f1eee4' : '#ffffff');
+        p = pt(sgx + 1.36, sgy + 1.11, 22.2); thick(p[0] - 4, p[1] + 1, p[0] + 4, p[1] - 2, 2, '#d63c3c'); R(p[0] + 4, p[1] - 3, 1, 2, '#f1eee4');
+        box(sgx + 1.55, sgy + 0.98, 16, 0.2, 0.2, 5, '#2a6fd6');
         break;
       case 'think':
-        box(sgx + 0.12, sgy + 1.0, 16, 0.5, 0.35, 3, '#7c6cff'); box(sgx + 0.15, sgy + 1.02, 19, 0.45, 0.32, 3, '#ffb454'); box(sgx + 0.18, sgy + 1.04, 22, 0.4, 0.28, 3, '#4fc3a0');
-        box(sgx + 1.62, sgy + 0.98, 16, 0.2, 0.2, 2, '#4a4a60'); p = pt(sgx + 1.72, sgy + 1.08, 18);
+        box(sgx + 1.2, sgy + 0.95, 16, 0.3, 0.3, 3, '#7c6cff'); box(sgx + 1.22, sgy + 0.97, 19, 0.26, 0.26, 3, '#ffb454'); box(sgx + 1.24, sgy + 0.99, 22, 0.22, 0.22, 3, '#4fc3a0');
+        box(sgx + 1.56, sgy + 0.98, 16, 0.2, 0.2, 2, '#4a4a60'); p = pt(sgx + 1.66, sgy + 1.08, 18);
         E(p[0], p[1] - 5, 5, 5, (f & 3) < 3 ? 'rgba(255,226,122,.9)' : 'rgba(154,152,168,.6)'); E(p[0], p[1] - 5, 3, 3, (f & 3) < 3 ? '#fff6c0' : '#c8c8d8');
         break;
       case 'test':
-        box(sgx + 0.12, sgy + 1.0, 16, 0.5, 0.3, 2, '#4a4a60');
-        for (i = 0; i < 3; i++) { p = pt(sgx + 0.18 + i * 0.14, sgy + 1.12, 18); R(p[0] - 1, p[1] - 6, 3, 7, OL); R(p[0], p[1] - 5, 1, 6, i === 1 ? '#ff7a7a' : '#8ff0b8'); }
-        p = pt(sgx + 1.65, sgy + 1.1, 16);
+        box(sgx + 0.06, sgy + 1.17, 16, 0.3, 0.26, 2, '#4a4a60');
+        for (i = 0; i < 3; i++) { p = pt(sgx + 0.11 + i * 0.09, sgy + 1.28, 18); R(p[0] - 1, p[1] - 6, 3, 7, OL); R(p[0], p[1] - 5, 1, 6, i === 1 ? '#ff7a7a' : '#8ff0b8'); }
+        p = pt(sgx + 1.6, sgy + 1.1, 16);
         R(p[0] - 4, p[1] - 10, 9, 11, OL); R(p[0] - 3, p[1] - 9, 7, 9, 'rgba(204,238,255,.55)'); R(p[0] - 3, p[1] - 5, 7, 5, '#5cff9a'); R(p[0] - 2, p[1] - 5, 2, 1, '#c8ffe0');
         R(p[0] - 1 + (f & 1), p[1] - 7 - (f % 3), 1, 1, '#c8ffe0'); R(p[0] + 2 - (f & 1), p[1] - 9 - (f % 2), 1, 1, '#c8ffe0');
         break;
       case 'quick':
-        flat(sgx + 0.15, sgy + 1.05, 0.18, 0.18, 16.2, '#ffe27a'); flat(sgx + 0.38, sgy + 1.15, 0.18, 0.18, 16.2, '#ff9acb'); flat(sgx + 0.2, sgy + 1.3, 0.18, 0.18, 16.2, '#9be8ff');
-        mug(sgx + 1.62, sgy + 1.0, '#ff8a2a');
+        flat(sgx + 0.06, sgy + 1.15, 0.15, 0.15, 16.2, '#ffe27a'); flat(sgx + 0.2, sgy + 1.27, 0.15, 0.15, 16.2, '#ff9acb'); flat(sgx + 0.07, sgy + 1.32, 0.15, 0.15, 16.2, '#9be8ff');
+        mug(sgx + 1.55, sgy + 1.0, '#ff8a2a');
         var px = ((t * 2) % 120) - 20 + pt(sgx, sgy, 0)[0] - 4, py = pt(sgx, sgy, 0)[1] + 4 - ((t >> 2) % 3);
         poly([[px, py], [px + 10, py + 3], [px + 2, py + 5]], '#ffffff'); poly([[px + 2, py + 5], [px + 10, py + 3], [px + 5, py + 7]], '#c8c8e0'); L(px, py, px + 10, py + 3, '#8888b0');
         break;
       case 'docs':
-        flat(sgx + 0.08, sgy + 1.0, 0.38, 0.5, 16, '#ffffff'); flat(sgx + 0.46, sgy + 1.0, 0.38, 0.5, 16, '#f1ead0');
-        a = pt(sgx + 0.46, sgy + 1.0, 16); b = pt(sgx + 0.46, sgy + 1.5, 16); L(a[0], a[1], b[0], b[1], '#9a8b60');
-        for (i = 0; i < 3; i++) { a = pt(sgx + 0.12, sgy + 1.1 + i * 0.1, 16.2); b = pt(sgx + 0.4, sgy + 1.1 + i * 0.1, 16.2); L(a[0], a[1], b[0], b[1], '#9a98a8'); }
-        box(sgx + 1.62, sgy + 0.98, 16, 0.18, 0.18, 7, '#8a5a3a'); p = pt(sgx + 1.71, sgy + 1.07, 23);
+        flat(sgx + 1.2, sgy + 0.92, 0.15, 0.42, 16, '#ffffff'); flat(sgx + 1.35, sgy + 0.92, 0.15, 0.42, 16, '#f1ead0');
+        a = pt(sgx + 1.35, sgy + 0.92, 16); b = pt(sgx + 1.35, sgy + 1.34, 16); L(a[0], a[1], b[0], b[1], '#9a8b60');
+        for (i = 0; i < 3; i++) { a = pt(sgx + 1.23, sgy + 1.0 + i * 0.1, 16.2); b = pt(sgx + 1.32, sgy + 1.0 + i * 0.1, 16.2); L(a[0], a[1], b[0], b[1], '#9a98a8'); }
+        box(sgx + 1.58, sgy + 0.98, 16, 0.16, 0.16, 7, '#8a5a3a'); p = pt(sgx + 1.66, sgy + 1.06, 23);
         thick(p[0], p[1], p[0] + 3, p[1] - 11, 2, '#ffffff'); thick(p[0] + 3, p[1] - 11, p[0] + 5, p[1] - 14, 2, '#e8e0c8');
         break;
     }
