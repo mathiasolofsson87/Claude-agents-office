@@ -1,6 +1,6 @@
 import { expect, test } from 'claude-code/testing'
 
-import { describeTool, LEAVE_TICKS, Office, roleFor } from './office'
+import { describeTool, LEAVE_TICKS, MAIN, Office, roleFor } from './office'
 
 test('subagent types and descriptions become roles', () => {
   expect(roleFor('Explore', '')).toBe('explore')
@@ -43,4 +43,17 @@ test('the same agent id always gets the same look', () => {
   const o2 = new Office((_role, seed) => { seen.push(seed); return {} })
   o2.add('agent-1', 'plan', '')
   expect(seen[1]).toBe(first)
+})
+
+test('the main agent always has the first tile, is never counted as a subagent and never leaves', () => {
+  const o = new Office(() => ({}))
+  o.add('a', 'code', 'x')
+  o.setMain('idle', 'waiting for you')
+  expect(o.members.map(m => m.id)).toEqual([MAIN, 'a'])
+  expect(o.live().map(m => m.id)).toEqual(['a'])
+  o.setMain('work', 'reading login.ts')
+  expect(o.members[0]).toMatchObject({ state: 'work', task: 'reading login.ts' })
+  o.clear()
+  for (let i = 0; i < LEAVE_TICKS + 1; i++) o.step()
+  expect(o.members.map(m => m.id)).toEqual([MAIN])
 })

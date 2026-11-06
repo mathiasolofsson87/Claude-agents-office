@@ -71,7 +71,10 @@ export function agentSeed(s: string): number {
   return (h % 9973) + 1
 }
 
-export type Member = { id: string; role: string; look: unknown; seed: number; task: string; born: number; leave?: number }
+/** What the main agent is up to: working, asleep waiting for you, or needing an answer from you. */
+export type State = 'work' | 'idle' | 'ask'
+export const MAIN = 'main'
+export type Member = { id: string; role: string; look: unknown; seed: number; task: string; state: State; born: number; leave?: number }
 
 /** Who is in the office and what they are saying, in the order they arrived. Pure state: no engine calls. */
 export class Office {
@@ -86,12 +89,23 @@ export class Office {
   add(id: string, role: string, task: string): void {
     if (this.has(id)) return
     const seed = agentSeed(id)
-    this.members.push({ id, role, look: this.lookFor(role, seed), seed, task, born: this.tick })
+    this.members.push({ id, role, look: this.lookFor(role, seed), seed, task, state: 'work', born: this.tick })
   }
 
   setTask(id: string, task: string): void {
     const m = this.members.find(x => x.id === id)
     if (m && m.leave === undefined) m.task = task
+  }
+
+  /** The main agent always has a tile, first in the grid, and never leaves. */
+  setMain(state: State, task: string): void {
+    let m = this.members.find(x => x.id === MAIN)
+    if (!m) {
+      this.members.unshift({ id: MAIN, role: 'main', look: this.lookFor('main', 7), seed: 3, task, state, born: this.tick })
+      return
+    }
+    m.state = state
+    m.task = task
   }
 
   finish(id: string): void {
@@ -100,7 +114,7 @@ export class Office {
   }
 
   clear(): void {
-    for (const m of this.members) if (m.leave === undefined) m.leave = this.tick
+    for (const m of this.members) if (m.id !== MAIN && m.leave === undefined) m.leave = this.tick
   }
 
   /** Advances `ticks` ticks (seconds); returns who left, so their pictures can be dropped. */
@@ -111,7 +125,8 @@ export class Office {
     return gone
   }
 
+  /** The subagents at work: not finished, and not the main agent. */
   live(): Member[] {
-    return this.members.filter(m => m.leave === undefined)
+    return this.members.filter(m => m.id !== MAIN && m.leave === undefined)
   }
 }

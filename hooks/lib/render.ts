@@ -9,6 +9,10 @@ export interface Agent {
   look: unknown
   /** varies the room around them (windows, pictures); the same seed always gives the same room */
   seed?: number
+  /** the main agent only: 'work' (the default), 'idle' (asleep, waiting for you) or 'ask' (needs an answer) */
+  state?: string
+  /** 1 or 2: the two frames of a wave goodbye (a raised right hand, swinging); left out for the usual pose */
+  wave?: number
 }
 export interface Frame { width: number; height: number; rgba: Uint8ClampedArray }
 
@@ -175,6 +179,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
 
   /* 3x5 pixel font */
   var G = {
+    '?':'61202','!':'22202',
     A:'25755',B:'65656',C:'34443',D:'65556',E:'74647',F:'74644',G:'34553',H:'55755',I:'72227',J:'11152',
     K:'55655',L:'44447',M:'57755',N:'65555',O:'25552',P:'65644',Q:'25573',R:'65655',S:'34216',T:'72222',
     U:'55557',V:'55552',W:'55775',X:'55255',Y:'55222',Z:'71247',
@@ -250,6 +255,8 @@ export function createRenderer(scale: 1 | 2 = 1) {
   ROLES.test.tasks = ['running npm test', 'waiting for CI', '12 pass, 1 fail', 'rerunning flaky'];
   ROLES.quick.tasks = ['renaming files', 'formatting code', 'building index', 'summarizing log'];
   ROLES.docs.tasks = ['updating README', 'writing CLAUDE.md', 'documenting API', 'polishing copy'];
+  /** The main agent, the one you are talking to: not a subagent, so it is not in the role mapping. */
+  ROLES.main = { name: 'MAIN', color: '#6aa6e8', shirt: '#2f4a7a', hair: '#2b1b0e', tasks: ['thinking'] };
   var ORDER = ['explore', 'plan', 'code', 'review', 'think', 'test', 'quick', 'docs'];
 
   /* ---------- people: chunky flat pixel avatars, one pixel = 1.5 units, no outlines ---------- */
@@ -261,7 +268,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
   var FANT = ['#7a4ab0', '#d63c8a', '#3b82d6', '#2fb36b'];
   function pick(a, rg) { return a[Math.floor(rg() * a.length)]; }
   function seeded(seed) { var n = seed * 97 + 13; return function () { n += 1; return rnd(n); }; }
-  var HATROLE = { explore: 1, plan: 1, quick: 1, docs: 1, code: 1, test: 1 };
+  var HATROLE = { explore: 1, plan: 1, quick: 1, docs: 1, code: 1, test: 1, main: 1 };
   function makeLook(role, g, rg) {
     var f = g === 'f', Lk = { g: g, skin: pick(SKINS, rg), eyes: pick(EYES, rg) };
     Lk.hc = rg() < 0.12 ? pick(FANT, rg) : pick(NAT, rg);
@@ -282,7 +289,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
   }
 
   function hatOf(role, Lk) {
-    return { explore: 'fedora', plan: 'hard', quick: 'cap', docs: 'beret', code: 'phones', test: 'goggles' }[role] || Lk.hat2 || null;
+    return { explore: 'fedora', plan: 'hard', quick: 'cap', docs: 'beret', code: 'phones', test: 'goggles', main: 'headset' }[role] || Lk.hat2 || null;
   }
 
   function drawHead(ax, ay, t, role, Lk, closed) {
@@ -341,6 +348,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
     }
     var hat = hatOf(role, Lk), Y = '#ffd23f';
     switch (hat) {
+      case 'headset': p(1, -1, 10, 1, '#3a3f5c'); p(0, 0, 1, 3, '#3a3f5c'); p(-1, 3, 2, 5, '#3a3f5c'); p(-1, 4, 1, 3, '#6a70a0'); p(0, 8, 1, 1, '#3a3f5c'); p(1, 9, 3, 1, '#3a3f5c'); p(3, 9, 1, 1, '#6aa6e8'); break;
       case 'fedora': p(2, -3, 8, 3, '#8a5e30'); p(3, -3, 3, 1, '#a87a46'); p(8, -3, 2, 3, '#6e4a24'); p(2, -1, 8, 1, '#3b2a18'); p(-1, 0, 14, 1, '#6a4524'); p(9, 0, 4, 1, '#523618'); p(9, -2, 1, 2, '#e8e0c8'); break;
       case 'hard': p(3, -3, 6, 1, Y); p(2, -2, 8, 1, Y); p(1, -1, 10, 2, Y); p(0, 1, 12, 1, '#e8b820'); p(3, -2, 3, 1, '#fff0a0'); p(5, -3, 2, 3, '#fff0a0'); p(8, -1, 3, 2, '#e8b820'); p(4, -1, 1, 2, '#e8b820'); break;
       case 'cap': p(2, -2, 8, 1, Lk.cap); p(1, -1, 10, 2, Lk.cap); p(8, -1, 3, 2, sh(Lk.cap, 0.8)); p(-3, 1, 9, 1, sh(Lk.cap, 0.7)); p(5, -1, 2, 1, '#ffffff'); p(3, -2, 3, 1, sh(Lk.cap, 1.25)); break;
@@ -369,6 +377,11 @@ export function createRenderer(scale: 1 | 2 = 1) {
     p(2, 12, 1, 1, fl); p(3, 13, 2, 1, fl); p(5, 14, 1, 1, fl); p(cols - 6, 10, 1, 1, fl); p(cols - 7, 11, 2, 1, fl); p(cols - 9, 12, 1, 1, fl);
     p(1, 16, 2, 1, fl); p(cols - 4, 16, 3, 1, fl);
     switch (role) {
+      case 'main':
+        p(mid - 4, 0, 3, 9, sh(c, 1.18)); p(mid + 2, 0, 3, 9, sh(c, 0.85)); p(mid - 1, 0, 3, 7, '#f4ead0');
+        p(cols - 5, 7, 3, 1, '#f4ead0'); p(mid, 10, 1, 1, '#f4ead0'); p(mid, 14, 1, 1, '#f4ead0');
+        weave(tx + 2, ty + 6, 6, 18, sh(c, 0.9), 1.5);
+        break;
       case 'explore':
         weave(tx + 2, ty + 4, cols * P - 4, rows * P - 6, sh(c, 0.82), 2);
         p(mid - 5, 0, 3, 2, '#8f6c3a'); p(mid + 3, 0, 3, 2, '#7a5a2f');
@@ -433,7 +446,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
     return { tx: tx, ty: ty, cols: cols };
   }
 
-  function arms(role, ax, ay, t, Lk) {
+  function arms(role, ax, ay, t, Lk, wave) {
     var c = ROLES[role].shirt, f = Lk.g === 'f', cols = f ? 12 : 14, tx = ax - cols * P / 2, ty = ay - 26, p = pg(tx, ty), k = (t >> (role === 'quick' ? 1 : 2)) & 1, i, r;
     var skin = role === 'test' ? '#b9c6ff' : Lk.skin, skd = sh(skin, 0.84), skl = sh(skin, 1.08);
     for (i = 0; i < 2; i++) {
@@ -441,6 +454,15 @@ export function createRenderer(scale: 1 | 2 = 1) {
       if (role === 'think' && left) {
         p(-1, 2, 2, 9, sl); p(-3, -4, 2, 15, sl); p(-3, 10, 3, 1, sl); p(-3, -4, 1, 14, hl); p(-2, -4, 1, 14, inner); p(-1, 10, 2, 1, sh(c, 0.6));
         p(-3, -6, 2, 2, skin); p(-4, -6, 1, 1, skd); p(-3, -7, 2, 1, skd); p(-3, -6, 1, 1, skl);
+        continue;
+      }
+      if (wave && !left) {
+        /* waving goodbye: the right arm goes up beside the head and the hand swings between two positions */
+        var sw = wave === 1 ? 0 : 2;
+        for (r = 2; r > -5; r--) { p(x0, r, 2, 1, sl); p(x0, r, 1, 1, inner); }
+        p(x0, -5, 2 + sw, 1, sl);
+        for (r = -6; r > -10; r--) { p(x0 + sw, r, 2, 1, sl); p(x0 + sw, r, 1, 1, inner); }
+        p(x0 + sw, -10, 2, 1, sh(c, 1.3)); p(x0 + sw, -13, 2, 3, skin); p(x0 + sw - 1, -12, 1, 1, skin); p(x0 + sw + 1, -13, 1, 3, skd);
         continue;
       }
       for (r = 2; r < 11; r++) { p(x0, r, 2, 1, sl); p(left ? x0 + 1 : x0, r, 1, 1, inner); }
@@ -509,6 +531,12 @@ export function createRenderer(scale: 1 | 2 = 1) {
   function props(role, sgx, sgy, t) {
     var f = t >> 2, p, i;
     switch (role) {
+      case 'main':
+        mug(sgx + 0.15, sgy + 1.05, '#f5f5f5');
+        p = pt(sgx + 0.23, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)');
+        flat(sgx + 0.5, sgy + 1.3, 0.3, 0.22, 16.2, '#f1eee4'); flat(sgx + 0.55, sgy + 1.33, 0.2, 0.05, 16.3, '#6aa6e8');
+        box(sgx + 1.62, sgy + 0.98, 16, 0.2, 0.2, 5, '#6aa6e8');
+        break;
       case 'explore':
         flat(sgx + 0.15, sgy + 1.0, 0.55, 0.4, 16, '#e8d9a8'); flat(sgx + 0.2, sgy + 1.05, 0.45, 0.3, 16.2, '#d8c690');
         p = pt(sgx + 0.45, sgy + 1.2, 17); R(p[0] - 1, p[1] - 1, 3, 1, '#d63c3c'); R(p[0], p[1] - 2, 1, 3, '#d63c3c');
@@ -572,9 +600,9 @@ export function createRenderer(scale: 1 | 2 = 1) {
     var wx = sgx + 0.62, wy = sgy + 0.42, ax = Math.round(X(wx, wy) * 2) / 2, ay = Math.round(Y(wx, wy, 14) * 2) / 2;
     var role = w && w.role, age = w ? t - w.born : 99, hide = w && age < 6 && age % 2 === 0, bob = ((t >> 3) & 1) ? 0.5 : 0;
     chairBack(ax, w ? ay : ay + 28);
-    if (w && !hide) { torso(role, ax, ay, w.look); drawHead(ax, ay + bob, t, role, w.look); }
+    if (w && !hide) { torso(role, ax, ay, w.look); drawHead(ax, ay + bob, t, role, w.look, w.asleep); }
     stamp('desk', function (a, b) { deskDraw(a, b); keyboard(a, b); }, sgx, sgy);
-    if (w && !hide) arms(role, ax, ay, t, w.look);
+    if (w && !hide) arms(role, ax, ay, t, w.look, w.wave);
     stamp('mon', function (a, b) { monitor(a, b, false, '#000'); }, sgx, sgy);
     if (w) { monitorLogo(sgx, sgy, ROLES[role].color); props(role, sgx, sgy, t); }
     if (w && age < 6) {
@@ -588,7 +616,7 @@ export function createRenderer(scale: 1 | 2 = 1) {
   var POSTER = {
     explore: ['#e8d9a8', '#d63c3c', '#c99a4a'], plan: ['#2f56b0', '#ffffff', '#6f95e8'], code: ['#1b1a2e', '#ff6fa5', '#5fd7ff'],
     review: ['#f1eee4', '#e24b4b', '#2fb36b'], think: ['#0f0f26', '#ffe27a', '#7c6cff'], test: ['#0c1d14', '#5cff9a', '#ff5c5c'],
-    quick: ['#2a1a10', '#ffe27a', '#ff9acb'], docs: ['#f6f1dc', '#6b6554', '#c0392b']
+    quick: ['#2a1a10', '#ffe27a', '#ff9acb'], docs: ['#f6f1dc', '#6b6554', '#c0392b'], main: ['#14122a', '#6aa6e8', '#ffb454']
   };
   function mix(c1, c2, t) {
     var a = parseInt(c1.slice(1), 16), b = parseInt(c2.slice(1), 16), out = 0;
@@ -642,8 +670,14 @@ export function createRenderer(scale: 1 | 2 = 1) {
     room(w.role, w.seed || 0);
     flat(0.95, 0.35, 1.95, 1.95, 0.4, 'rgba(0,0,0,.22)');
     flat(0.95, 0.35, 1.95, 1.95, 0.5, sh(color, 0.45)); flat(1.05, 0.45, 1.75, 1.75, 0.6, sh(color, 0.58));
-    station(1.0, 0.3, 100, 0, { role: w.role, look: w.look, born: -99 });
+    station(1.0, 0.3, 100, 0, { role: w.role, look: w.look, born: -99, asleep: w.state === 'idle', wave: w.wave });
     nameTag(1.0, 0.3, ROLES[w.role].name, color);
+    var hx = Math.round(X(1.62, 0.72)), hy = Math.round(Y(1.62, 0.72, 14));
+    if (w.state === 'idle') { T('Z', hx + 12, hy - 48, '#e9e6ff', 1); T('Z', hx + 17, hy - 55, '#e9e6ff', 2); T('Z', hx + 24, hy - 63, '#e9e6ff', 2); }
+    if (w.state === 'ask') {
+      poly([[hx + 12, hy - 46], [hx + 18, hy - 46], [hx + 9, hy - 40]], OL); poly([[hx + 13, hy - 46], [hx + 17, hy - 46], [hx + 11, hy - 43]], '#ffffff');
+      R(hx + 12, hy - 62, 20, 16, OL); R(hx + 13, hy - 61, 18, 14, '#ffffff'); T('?', hx + 19, hy - 58, '#1a1a2e', 2);
+    }
     return { width: cv.w, height: cv.h, rgba: cv.data };
   }
 

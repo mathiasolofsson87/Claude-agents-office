@@ -10,11 +10,17 @@
       "description": "Open the office the first time a subagent starts.",
       "default": true
     },
+    "autoAspect": {
+      "type": "boolean",
+      "title": "Measure the terminal's cell size",
+      "description": "On by default: the plugin reads the terminal's size in pixels (a read-only call made through a one-line perl command) so the pictures fit exactly, whatever the font. Turn it off to use the cell aspect setting below.",
+      "default": true
+    },
     "cellAspect": {
       "type": "number",
       "title": "Terminal cell height / width",
-      "description": "How many times taller a character cell is than it is wide, between 1 and 4. Change it if the office looks stretched or squashed.",
-      "default": 2
+      "description": "Used when the cell size cannot be measured, or when measuring is off: how many times taller a character cell is than it is wide, between 1 and 4. Raise it a little if there is a bar under each picture, lower it if the pictures look squashed.",
+      "default": 2.2
     },
     "detail": {
       "type": "string",
