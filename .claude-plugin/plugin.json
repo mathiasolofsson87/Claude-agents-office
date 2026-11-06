@@ -1,6 +1,6 @@
 {
   "name": "agent-office",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A pixel-art office in a pane: every running subagent is a worker at a desk, with a live label for what it is doing.",
   "license": "MIT",
   "userConfig": {
