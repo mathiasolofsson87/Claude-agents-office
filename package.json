@@ -1,0 +1,7 @@
+{
+  "name": "agent-office",
+  "private": true,
+  "scripts": {
+    "test": "claude plugin test ."
+  }
+}
