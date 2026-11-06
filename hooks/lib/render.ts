@@ -490,18 +490,18 @@ export function createRenderer(scale: 1 | 2 = 1) {
 
   /* ---------- desks, props, screens ---------- */
   function deskDraw(sgx, sgy) {
-    /* the desk is centred on the monitor, which sits straight in front of the worker; the drawers are at the right-hand end */
-    box(sgx + 0.4, sgy + 0.9, 0, 0.08, 0.55, 12, '#a8703c');
-    box(sgx + 0.5, sgy + 0.92, 0, 1.4, 0.05, 12, '#8a5a30');
-    box(sgx + 1.7, sgy + 0.9, 0, 0.62, 0.58, 12, '#c0884e');
-    var a = pt(sgx + 1.75, sgy + 1.48, 8), b = pt(sgx + 2.27, sgy + 1.48, 8);
+    box(sgx + 0.1, sgy + 0.9, 0, 0.08, 0.55, 12, '#a8703c');
+    box(sgx + 0.2, sgy + 0.92, 0, 1.42, 0.05, 12, '#8a5a30');
+    box(sgx + 1.1, sgy + 0.9, 0, 0.62, 0.58, 12, '#c0884e');
+    var a = pt(sgx + 1.15, sgy + 1.48, 8), b = pt(sgx + 1.67, sgy + 1.48, 8);
     L(a[0], a[1], b[0], b[1], '#8a5a30');
-    var h1 = pt(sgx + 1.95, sgy + 1.48, 6), h2 = pt(sgx + 2.07, sgy + 1.48, 6);
+    var h1 = pt(sgx + 1.35, sgy + 1.48, 6), h2 = pt(sgx + 1.47, sgy + 1.48, 6);
     L(h1[0], h1[1], h2[0], h2[1], '#e8c878');
-    box(sgx + 0.35, sgy + 0.85, 12, 2.0, 0.65, 4, '#dcab6a');
+    box(sgx + 0.05, sgy + 0.85, 12, 1.7, 0.65, 4, '#dcab6a');
   }
   function keyboard(sgx, sgy) {
-    box(sgx + 1.13, sgy + 1.0, 16, 0.55, 0.22, 1, '#cfd5ea');
+    box(sgx + 0.45, sgy + 1.0, 16, 0.55, 0.22, 1, '#cfd5ea');
+    for (var i = 0; i < 3; i++) { var a = pt(sgx + 0.5, sgy + 1.05 + i * 0.05, 17), b = pt(sgx + 1.5, sgy + 1.05 + i * 0.05, 17); }
   }
   function monitor(sgx, sgy, on, col) {
     var gx = sgx + 1.1, gy = sgy + 0.98;
@@ -532,60 +532,60 @@ export function createRenderer(scale: 1 | 2 = 1) {
     var f = t >> 2, p, i;
     switch (role) {
       case 'main':
-        mug(sgx + 0.45, sgy + 1.05, '#f5f5f5');
-        p = pt(sgx + 0.53, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)');
-        flat(sgx + 0.8, sgy + 1.3, 0.3, 0.22, 16.2, '#f1eee4'); flat(sgx + 0.85, sgy + 1.33, 0.2, 0.05, 16.3, '#6aa6e8');
-        box(sgx + 2.12, sgy + 0.98, 16, 0.2, 0.2, 5, '#6aa6e8');
+        mug(sgx + 0.15, sgy + 1.05, '#f5f5f5');
+        p = pt(sgx + 0.23, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)');
+        flat(sgx + 0.5, sgy + 1.3, 0.3, 0.22, 16.2, '#f1eee4'); flat(sgx + 0.55, sgy + 1.33, 0.2, 0.05, 16.3, '#6aa6e8');
+        box(sgx + 1.62, sgy + 0.98, 16, 0.2, 0.2, 5, '#6aa6e8');
         break;
       case 'explore':
-        flat(sgx + 0.45, sgy + 1.0, 0.55, 0.4, 16, '#e8d9a8'); flat(sgx + 0.5, sgy + 1.05, 0.45, 0.3, 16.2, '#d8c690');
-        p = pt(sgx + 0.75, sgy + 1.2, 17); R(p[0] - 1, p[1] - 1, 3, 1, '#d63c3c'); R(p[0], p[1] - 2, 1, 3, '#d63c3c');
-        box(sgx + 2.15, sgy + 0.95, 16, 0.3, 0.25, 4, '#e0b86a'); box(sgx + 2.17, sgy + 0.97, 20, 0.26, 0.2, 3, '#c99a4a');
-        p = pt(sgx + 0.92, sgy + 1.1, 24); var bob = [0, 1, 1, 0][f % 4];
+        flat(sgx + 0.15, sgy + 1.0, 0.55, 0.4, 16, '#e8d9a8'); flat(sgx + 0.2, sgy + 1.05, 0.45, 0.3, 16.2, '#d8c690');
+        p = pt(sgx + 0.45, sgy + 1.2, 17); R(p[0] - 1, p[1] - 1, 3, 1, '#d63c3c'); R(p[0], p[1] - 2, 1, 3, '#d63c3c');
+        box(sgx + 1.65, sgy + 0.95, 16, 0.3, 0.25, 4, '#e0b86a'); box(sgx + 1.67, sgy + 0.97, 20, 0.26, 0.2, 3, '#c99a4a');
+        p = pt(sgx + 0.62, sgy + 1.1, 24); var bob = [0, 1, 1, 0][f % 4];
         E(p[0], p[1] - 6 + bob, 6, 6, OL); E(p[0], p[1] - 6 + bob, 4, 4, '#7fd6ff'); E(p[0] - 1, p[1] - 8 + bob, 1, 1, '#fff');
         thick(p[0] + 4, p[1] - 2 + bob, p[0] + 9, p[1] + 3 + bob, 3, '#8b5a2b');
         break;
       case 'plan':
-        flat(sgx + 0.4, sgy + 1.0, 0.7, 0.45, 16, '#2f56b0');
-        for (i = 0; i < 4; i++) { var a = pt(sgx + 0.45 + i * 0.16, sgy + 1.02, 16.2), b = pt(sgx + 0.45 + i * 0.16, sgy + 1.43, 16.2); L(a[0], a[1], b[0], b[1], '#6f95e8'); }
-        box(sgx + 2.12, sgy + 0.95, 16, 0.12, 0.5, 6, '#e8f0ff'); box(sgx + 2.12, sgy + 0.95, 16, 0.12, 0.05, 6, '#9fb8e8');
-        p = pt(sgx + 0.8, sgy + 1.25, 17); R(p[0] - 5, p[1], 12, 1, '#ffd54f');
+        flat(sgx + 0.1, sgy + 1.0, 0.7, 0.45, 16, '#2f56b0');
+        for (i = 0; i < 4; i++) { var a = pt(sgx + 0.15 + i * 0.16, sgy + 1.02, 16.2), b = pt(sgx + 0.15 + i * 0.16, sgy + 1.43, 16.2); L(a[0], a[1], b[0], b[1], '#6f95e8'); }
+        box(sgx + 1.62, sgy + 0.95, 16, 0.12, 0.5, 6, '#e8f0ff'); box(sgx + 1.62, sgy + 0.95, 16, 0.12, 0.05, 6, '#9fb8e8');
+        p = pt(sgx + 0.5, sgy + 1.25, 17); R(p[0] - 5, p[1], 12, 1, '#ffd54f');
         break;
       case 'code':
-        mug(sgx + 0.45, sgy + 1.05, '#f5f5f5');
-        p = pt(sgx + 0.53, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)'); R(p[0] + 2 - (f & 1), p[1] - 7 - (f % 3), 1, 2, 'rgba(255,255,255,.4)');
-        box(sgx + 2.12, sgy + 0.98, 16, 0.14, 0.14, 8, '#ff5c93'); box(sgx + 2.12, sgy + 0.98, 24, 0.14, 0.14, 1, '#cfd5ea');
-        flat(sgx + 0.85, sgy + 1.3, 0.2, 0.16, 16.2, '#ffe27a');
+        mug(sgx + 0.15, sgy + 1.05, '#f5f5f5');
+        p = pt(sgx + 0.23, sgy + 1.13, 24); R(p[0] + (f & 1), p[1] - 3 - (f % 3), 1, 2, 'rgba(255,255,255,.6)'); R(p[0] + 2 - (f & 1), p[1] - 7 - (f % 3), 1, 2, 'rgba(255,255,255,.4)');
+        box(sgx + 1.62, sgy + 0.98, 16, 0.14, 0.14, 8, '#ff5c93'); box(sgx + 1.62, sgy + 0.98, 24, 0.14, 0.14, 1, '#cfd5ea');
+        flat(sgx + 0.55, sgy + 1.3, 0.2, 0.16, 16.2, '#ffe27a');
         break;
       case 'review':
-        for (i = 0; i < 4; i++) box(sgx + 0.42 + (i & 1) * 0.02, sgy + 1.0, 16 + i * 1.5, 0.45, 0.35, 1.5, i % 2 ? '#f1eee4' : '#ffffff');
-        p = pt(sgx + 0.85, sgy + 1.3, 23); R(p[0] - 4, p[1], 3, 1, '#d63c3c'); R(p[0] - 2, p[1] + 1, 3, 1, '#d63c3c');
-        thick(pt(sgx + 0.9, sgy + 1.35, 17)[0], pt(sgx + 0.9, sgy + 1.35, 17)[1], pt(sgx + 1.15, sgy + 1.2, 17)[0], pt(sgx + 1.15, sgy + 1.2, 17)[1], 2, '#d63c3c');
-        box(sgx + 2.15, sgy + 0.98, 16, 0.2, 0.2, 5, '#2a6fd6');
+        for (i = 0; i < 4; i++) box(sgx + 0.12 + (i & 1) * 0.02, sgy + 1.0, 16 + i * 1.5, 0.45, 0.35, 1.5, i % 2 ? '#f1eee4' : '#ffffff');
+        p = pt(sgx + 0.55, sgy + 1.3, 23); R(p[0] - 4, p[1], 3, 1, '#d63c3c'); R(p[0] - 2, p[1] + 1, 3, 1, '#d63c3c');
+        thick(pt(sgx + 0.6, sgy + 1.35, 17)[0], pt(sgx + 0.6, sgy + 1.35, 17)[1], pt(sgx + 0.85, sgy + 1.2, 17)[0], pt(sgx + 0.85, sgy + 1.2, 17)[1], 2, '#d63c3c');
+        box(sgx + 1.65, sgy + 0.98, 16, 0.2, 0.2, 5, '#2a6fd6');
         break;
       case 'think':
-        box(sgx + 0.42, sgy + 1.0, 16, 0.5, 0.35, 3, '#7c6cff'); box(sgx + 0.45, sgy + 1.02, 19, 0.45, 0.32, 3, '#ffb454'); box(sgx + 0.48, sgy + 1.04, 22, 0.4, 0.28, 3, '#4fc3a0');
-        box(sgx + 2.12, sgy + 0.98, 16, 0.2, 0.2, 2, '#4a4a60'); p = pt(sgx + 2.22, sgy + 1.08, 18);
+        box(sgx + 0.12, sgy + 1.0, 16, 0.5, 0.35, 3, '#7c6cff'); box(sgx + 0.15, sgy + 1.02, 19, 0.45, 0.32, 3, '#ffb454'); box(sgx + 0.18, sgy + 1.04, 22, 0.4, 0.28, 3, '#4fc3a0');
+        box(sgx + 1.62, sgy + 0.98, 16, 0.2, 0.2, 2, '#4a4a60'); p = pt(sgx + 1.72, sgy + 1.08, 18);
         E(p[0], p[1] - 5, 5, 5, (f & 3) < 3 ? 'rgba(255,226,122,.9)' : 'rgba(154,152,168,.6)'); E(p[0], p[1] - 5, 3, 3, (f & 3) < 3 ? '#fff6c0' : '#c8c8d8');
         break;
       case 'test':
-        box(sgx + 0.42, sgy + 1.0, 16, 0.5, 0.3, 2, '#4a4a60');
-        for (i = 0; i < 3; i++) { p = pt(sgx + 0.48 + i * 0.14, sgy + 1.12, 18); R(p[0] - 1, p[1] - 6, 3, 7, OL); R(p[0], p[1] - 5, 1, 6, i === 1 ? '#ff7a7a' : '#8ff0b8'); }
-        p = pt(sgx + 2.15, sgy + 1.1, 16);
+        box(sgx + 0.12, sgy + 1.0, 16, 0.5, 0.3, 2, '#4a4a60');
+        for (i = 0; i < 3; i++) { p = pt(sgx + 0.18 + i * 0.14, sgy + 1.12, 18); R(p[0] - 1, p[1] - 6, 3, 7, OL); R(p[0], p[1] - 5, 1, 6, i === 1 ? '#ff7a7a' : '#8ff0b8'); }
+        p = pt(sgx + 1.65, sgy + 1.1, 16);
         R(p[0] - 4, p[1] - 10, 9, 11, OL); R(p[0] - 3, p[1] - 9, 7, 9, 'rgba(204,238,255,.55)'); R(p[0] - 3, p[1] - 5, 7, 5, '#5cff9a'); R(p[0] - 2, p[1] - 5, 2, 1, '#c8ffe0');
         R(p[0] - 1 + (f & 1), p[1] - 7 - (f % 3), 1, 1, '#c8ffe0'); R(p[0] + 2 - (f & 1), p[1] - 9 - (f % 2), 1, 1, '#c8ffe0');
         break;
       case 'quick':
-        flat(sgx + 0.45, sgy + 1.05, 0.18, 0.18, 16.2, '#ffe27a'); flat(sgx + 0.68, sgy + 1.15, 0.18, 0.18, 16.2, '#ff9acb'); flat(sgx + 0.5, sgy + 1.3, 0.18, 0.18, 16.2, '#9be8ff');
-        mug(sgx + 2.12, sgy + 1.0, '#ff8a2a');
+        flat(sgx + 0.15, sgy + 1.05, 0.18, 0.18, 16.2, '#ffe27a'); flat(sgx + 0.38, sgy + 1.15, 0.18, 0.18, 16.2, '#ff9acb'); flat(sgx + 0.2, sgy + 1.3, 0.18, 0.18, 16.2, '#9be8ff');
+        mug(sgx + 1.62, sgy + 1.0, '#ff8a2a');
         var px = ((t * 2) % 120) - 20 + pt(sgx, sgy, 0)[0] - 4, py = pt(sgx, sgy, 0)[1] + 4 - ((t >> 2) % 3);
         poly([[px, py], [px + 10, py + 3], [px + 2, py + 5]], '#ffffff'); poly([[px + 2, py + 5], [px + 10, py + 3], [px + 5, py + 7]], '#c8c8e0'); L(px, py, px + 10, py + 3, '#8888b0');
         break;
       case 'docs':
-        flat(sgx + 0.38, sgy + 1.0, 0.38, 0.5, 16, '#ffffff'); flat(sgx + 0.76, sgy + 1.0, 0.38, 0.5, 16, '#f1ead0');
-        a = pt(sgx + 0.76, sgy + 1.0, 16); b = pt(sgx + 0.76, sgy + 1.5, 16); L(a[0], a[1], b[0], b[1], '#9a8b60');
-        for (i = 0; i < 3; i++) { a = pt(sgx + 0.42, sgy + 1.1 + i * 0.1, 16.2); b = pt(sgx + 0.7, sgy + 1.1 + i * 0.1, 16.2); L(a[0], a[1], b[0], b[1], '#9a98a8'); }
-        box(sgx + 2.12, sgy + 0.98, 16, 0.18, 0.18, 7, '#8a5a3a'); p = pt(sgx + 2.21, sgy + 1.07, 23);
+        flat(sgx + 0.08, sgy + 1.0, 0.38, 0.5, 16, '#ffffff'); flat(sgx + 0.46, sgy + 1.0, 0.38, 0.5, 16, '#f1ead0');
+        a = pt(sgx + 0.46, sgy + 1.0, 16); b = pt(sgx + 0.46, sgy + 1.5, 16); L(a[0], a[1], b[0], b[1], '#9a8b60');
+        for (i = 0; i < 3; i++) { a = pt(sgx + 0.12, sgy + 1.1 + i * 0.1, 16.2); b = pt(sgx + 0.4, sgy + 1.1 + i * 0.1, 16.2); L(a[0], a[1], b[0], b[1], '#9a98a8'); }
+        box(sgx + 1.62, sgy + 0.98, 16, 0.18, 0.18, 7, '#8a5a3a'); p = pt(sgx + 1.71, sgy + 1.07, 23);
         thick(p[0], p[1], p[0] + 3, p[1] - 11, 2, '#ffffff'); thick(p[0] + 3, p[1] - 11, p[0] + 5, p[1] - 14, 2, '#e8e0c8');
         break;
     }
