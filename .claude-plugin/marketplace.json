@@ -1,0 +1,13 @@
+{
+  "name": "agent-office",
+  "owner": {
+    "name": "Agent Office contributors"
+  },
+  "description": "Agent Office: a pixel-art office in a Claude Code pane, one worker per running subagent.",
+  "plugins": [
+    {
+      "name": "agent-office",
+      "source": "./"
+    }
+  ]
+}

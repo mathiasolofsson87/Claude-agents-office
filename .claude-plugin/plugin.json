@@ -1,0 +1,42 @@
+{
+  "name": "agent-office",
+  "version": "0.1.0",
+  "description": "A pixel-art office in a pane: every running subagent is a worker at a desk, with a live label for what it is doing.",
+  "license": "MIT",
+  "userConfig": {
+    "autoOpen": {
+      "type": "boolean",
+      "title": "Open the pane automatically",
+      "description": "Open the office the first time a subagent starts.",
+      "default": true
+    },
+    "cellAspect": {
+      "type": "number",
+      "title": "Terminal cell height / width",
+      "description": "How many times taller a character cell is than it is wide, between 1 and 4. Change it if the office looks stretched or squashed.",
+      "default": 2
+    },
+    "detail": {
+      "type": "string",
+      "title": "Picture detail",
+      "description": "auto picks by office size, normal is lighter, high is sharper.",
+      "default": "auto",
+      "options": [
+        "auto",
+        "normal",
+        "high"
+      ]
+    },
+    "display": {
+      "type": "string",
+      "title": "How the office is drawn",
+      "description": "auto draws the picture with live labels where the terminal can show images (kitty, Ghostty, iTerm2 3.5 or later, in fullscreen, not under tmux) and a text list elsewhere. image and text force one of them.",
+      "default": "auto",
+      "options": [
+        "auto",
+        "image",
+        "text"
+      ]
+    }
+  }
+}
